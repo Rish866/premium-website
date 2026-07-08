@@ -10,6 +10,7 @@ import AddBlockPanel from "../../components/builder/AddBlockPanel";
 
 import { createPage, getPages } from "../../services/projects/pageService";
 import { createSection, ensureDefaultSections } from "../../services/builder/sectionService";
+import { updateSectionOrder } from "../../services/builder/reorderSections";
 
 type PreviewMode = "desktop" | "tablet" | "mobile";
 
@@ -77,6 +78,27 @@ export default function BuilderPage() {
     setAddBlockOpen(false);
   }
 
+  async function moveSection(sectionId: string, direction: "up" | "down") {
+    const currentIndex = sections.findIndex((section) => section.id === sectionId);
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= sections.length) return;
+
+    const next = [...sections];
+    const current = next[currentIndex];
+    next[currentIndex] = next[targetIndex];
+    next[targetIndex] = current;
+
+    const normalized = next.map((section, index) => ({
+      ...section,
+      sort_order: index + 1,
+    }));
+
+    setSections(normalized);
+    await updateSectionOrder(normalized);
+  }
+
   const selectedSection = useMemo(
     () => sections.find((x) => x.id === selectedSectionId),
     [sections, selectedSectionId]
@@ -85,12 +107,7 @@ export default function BuilderPage() {
   function updateLocalConfig(config: any) {
     setSections((prev) =>
       prev.map((section) =>
-        section.id === selectedSectionId
-          ? {
-              ...section,
-              config,
-            }
-          : section
+        section.id === selectedSectionId ? { ...section, config } : section
       )
     );
   }
@@ -116,6 +133,8 @@ export default function BuilderPage() {
         selectedSectionId={selectedSectionId}
         onSelect={setSelectedSectionId}
         onAdd={() => setAddBlockOpen(true)}
+        onMoveUp={(id) => moveSection(id, "up")}
+        onMoveDown={(id) => moveSection(id, "down")}
       />
 
       <main className="flex-1 overflow-auto bg-[#080808] p-6">
@@ -129,10 +148,7 @@ export default function BuilderPage() {
         />
       </main>
 
-      <PropertyPanel
-        section={selectedSection}
-        onLocalChange={updateLocalConfig}
-      />
+      <PropertyPanel section={selectedSection} onLocalChange={updateLocalConfig} />
 
       <AddBlockPanel
         open={addBlockOpen}
