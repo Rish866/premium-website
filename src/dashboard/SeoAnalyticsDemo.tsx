@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { BarChart3, CheckCircle2, Code2, Globe2, Search, Share2, Sparkles } from "lucide-react";
+import { BarChart3, CheckCircle2, Code2, Globe2, Search, Share2 } from "lucide-react";
 
 export default function SeoAnalyticsDemo() {
   const [seo, setSeo] = useState({
@@ -156,3 +156,4 @@ export default function SeoAnalyticsDemo() {
     </section>
   );
 }
+

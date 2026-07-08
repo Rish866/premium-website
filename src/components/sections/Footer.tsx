@@ -1,4 +1,4 @@
-﻿import { ArrowRight, Instagram, Linkedin, Mail, MapPin, MessageCircle } from "lucide-react";
+﻿import { ArrowRight, Mail, MapPin, MessageCircle } from "lucide-react";
 import { siteData } from "../../data/siteData";
 
 export default function Footer() {
@@ -59,3 +59,4 @@ export default function Footer() {
     </footer>
   );
 }
+

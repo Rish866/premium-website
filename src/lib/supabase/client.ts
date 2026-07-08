@@ -3,6 +3,4 @@
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-console.log("Supabase URL loaded:", supabaseUrl);
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

@@ -1,4 +1,4 @@
-﻿import { Mail, MapPin, MessageCircle, PhoneCall } from "lucide-react";
+﻿import { MessageCircle, PhoneCall } from "lucide-react";
 import { siteData } from "../../data/siteData";
 
 export default function ContactSection() {
@@ -83,3 +83,4 @@ export default function ContactSection() {
     </section>
   );
 }
+

@@ -1,19 +1,17 @@
 ﻿import { useEffect, useRef } from "react";
 
-export function useDebounce(
-  callback: () => void,
-  delay: number,
-  deps: any[]
-) {
-  const timer = useRef<number>();
+export function useDebounce(callback: () => void, delay: number, deps: unknown[]) {
+  const timer = useRef<number | null>(null);
 
   useEffect(() => {
-    window.clearTimeout(timer.current);
+    if (timer.current) window.clearTimeout(timer.current);
 
     timer.current = window.setTimeout(() => {
       callback();
     }, delay);
 
-    return () => window.clearTimeout(timer.current);
+    return () => {
+      if (timer.current) window.clearTimeout(timer.current);
+    };
   }, deps);
 }
