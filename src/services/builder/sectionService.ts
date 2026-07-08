@@ -57,3 +57,40 @@ export async function ensureDefaultSections(pageId: string) {
 
   return await getSections(pageId);
 }
+
+export async function createSection(pageId: string, type: string, sortOrder: number) {
+  const defaultConfig =
+    type === "hero"
+      ? {
+          title: "New Hero Section",
+          subtitle: "Write a powerful message for this section.",
+        }
+      : type === "features"
+      ? {
+          items: ["Feature One", "Feature Two", "Feature Three"],
+        }
+      : type === "contact"
+      ? {
+          phone: "+91 98765 43210",
+          email: "hello@agencyos.ai",
+        }
+      : {
+          title: "New Section",
+          subtitle: "Configure this section from the properties panel.",
+        };
+
+  const { data, error } = await supabase
+    .from("sections")
+    .insert({
+      page_id: pageId,
+      type,
+      sort_order: sortOrder,
+      config: defaultConfig,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}

@@ -6,9 +6,10 @@ import SectionsSidebar from "../../components/builder/SectionsSidebar";
 import LiveWebsitePreview from "../../components/builder/LiveWebsitePreview";
 import PropertyPanel from "../../components/builder/PropertyPanel";
 import PreviewToolbar from "../../components/builder/PreviewToolbar";
+import AddBlockPanel from "../../components/builder/AddBlockPanel";
 
 import { createPage, getPages } from "../../services/projects/pageService";
-import { ensureDefaultSections } from "../../services/builder/sectionService";
+import { createSection, ensureDefaultSections } from "../../services/builder/sectionService";
 
 type PreviewMode = "desktop" | "tablet" | "mobile";
 
@@ -21,6 +22,7 @@ export default function BuilderPage() {
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<PreviewMode>("desktop");
+  const [addBlockOpen, setAddBlockOpen] = useState(false);
 
   async function loadPages() {
     if (!id) return;
@@ -64,6 +66,17 @@ export default function BuilderPage() {
     loadPages();
   }
 
+  async function addBlock(type: string) {
+    if (!selectedPageId) return;
+
+    const nextSortOrder = sections.length + 1;
+    const newSection = await createSection(selectedPageId, type, nextSortOrder);
+
+    setSections([...sections, newSection]);
+    setSelectedSectionId(newSection.id);
+    setAddBlockOpen(false);
+  }
+
   const selectedSection = useMemo(
     () => sections.find((x) => x.id === selectedSectionId),
     [sections, selectedSectionId]
@@ -102,6 +115,7 @@ export default function BuilderPage() {
         sections={sections}
         selectedSectionId={selectedSectionId}
         onSelect={setSelectedSectionId}
+        onAdd={() => setAddBlockOpen(true)}
       />
 
       <main className="flex-1 overflow-auto bg-[#080808] p-6">
@@ -119,7 +133,12 @@ export default function BuilderPage() {
         section={selectedSection}
         onLocalChange={updateLocalConfig}
       />
+
+      <AddBlockPanel
+        open={addBlockOpen}
+        onClose={() => setAddBlockOpen(false)}
+        onAdd={addBlock}
+      />
     </div>
   );
 }
-
