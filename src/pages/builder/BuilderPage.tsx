@@ -5,9 +5,12 @@ import PagesSidebar from "../../components/builder/PagesSidebar";
 import SectionsSidebar from "../../components/builder/SectionsSidebar";
 import LiveWebsitePreview from "../../components/builder/LiveWebsitePreview";
 import PropertyPanel from "../../components/builder/PropertyPanel";
+import PreviewToolbar from "../../components/builder/PreviewToolbar";
 
 import { createPage, getPages } from "../../services/projects/pageService";
 import { ensureDefaultSections } from "../../services/builder/sectionService";
+
+type PreviewMode = "desktop" | "tablet" | "mobile";
 
 export default function BuilderPage() {
   const { id } = useParams();
@@ -17,12 +20,12 @@ export default function BuilderPage() {
 
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<PreviewMode>("desktop");
 
   async function loadPages() {
     if (!id) return;
 
     const data = await getPages(id);
-
     setPages(data);
 
     if (data.length) {
@@ -32,7 +35,6 @@ export default function BuilderPage() {
 
   async function loadSections(pageId: string) {
     const data = await ensureDefaultSections(pageId);
-
     setSections(data);
 
     if (data.length) {
@@ -56,11 +58,9 @@ export default function BuilderPage() {
     if (!id) return;
 
     const title = prompt("Page Name");
-
     if (!title) return;
 
     await createPage(id, title);
-
     loadPages();
   }
 
@@ -82,9 +82,15 @@ export default function BuilderPage() {
     );
   }
 
-  return (
-    <div className="flex h-screen bg-black text-white">
+  const widthClass =
+    previewMode === "desktop"
+      ? "max-w-6xl"
+      : previewMode === "tablet"
+      ? "max-w-3xl"
+      : "max-w-sm";
 
+  return (
+    <div className="flex h-screen overflow-hidden bg-black text-white">
       <PagesSidebar
         pages={pages}
         selectedPageId={selectedPageId}
@@ -98,9 +104,12 @@ export default function BuilderPage() {
         onSelect={setSelectedSectionId}
       />
 
-      <main className="flex-1 overflow-auto bg-[#080808] p-8">
+      <main className="flex-1 overflow-auto bg-[#080808] p-6">
+        <PreviewToolbar mode={previewMode} onModeChange={setPreviewMode} />
+
         <LiveWebsitePreview
           sections={sections}
+          widthClass={widthClass}
         />
       </main>
 
@@ -108,8 +117,6 @@ export default function BuilderPage() {
         section={selectedSection}
         onLocalChange={updateLocalConfig}
       />
-
     </div>
   );
 }
-
