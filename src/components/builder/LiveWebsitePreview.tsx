@@ -9,11 +9,15 @@ type Section = {
 type Props = {
   sections: Section[];
   widthClass?: string;
+  selectedSectionId?: string | null;
+  onSelectSection?: (id: string) => void;
 };
 
 export default function LiveWebsitePreview({
   sections,
   widthClass = "max-w-5xl",
+  selectedSectionId,
+  onSelectSection,
 }: Props) {
   return (
     <div className={`mx-auto w-full ${widthClass} overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-2xl shadow-cyan-500/10`}>
@@ -32,27 +36,38 @@ export default function LiveWebsitePreview({
         </div>
       ) : (
         sections.map((section) => {
-          const Block =
-            BlockRegistry[section.type as keyof typeof BlockRegistry];
+          const Block = BlockRegistry[section.type as keyof typeof BlockRegistry];
 
           if (!Block) {
             return (
-              <div
-                key={section.id}
-                className="border-b border-red-400/20 bg-red-400/10 p-8"
-              >
-                <h3 className="text-lg font-semibold text-red-300">
-                  Unknown Block
-                </h3>
-
-                <p className="mt-2 text-sm text-red-200">
-                  "{section.type}" is not registered.
-                </p>
+              <div key={section.id} className="border-b border-red-400/20 bg-red-400/10 p-8">
+                <h3 className="text-lg font-semibold text-red-300">Unknown Block</h3>
+                <p className="mt-2 text-sm text-red-200">"{section.type}" is not registered.</p>
               </div>
             );
           }
 
-          return <Block key={section.id} config={section.config} />;
+          const isSelected = selectedSectionId === section.id;
+
+          return (
+            <div
+              key={section.id}
+              onClick={() => onSelectSection?.(section.id)}
+              className={`group relative cursor-pointer transition ${
+                isSelected ? "ring-2 ring-cyan-300 ring-inset" : "hover:ring-2 hover:ring-cyan-300/40 hover:ring-inset"
+              }`}
+            >
+              <div className={`pointer-events-none absolute left-4 top-4 z-20 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-xl transition ${
+                isSelected
+                  ? "border-cyan-300/50 bg-cyan-400/20 text-cyan-100 opacity-100"
+                  : "border-white/10 bg-black/40 text-white/60 opacity-0 group-hover:opacity-100"
+              }`}>
+                {section.type.toUpperCase()}
+              </div>
+
+              <Block config={section.config} />
+            </div>
+          );
         })
       )}
     </div>

@@ -110,6 +110,8 @@ export default function BuilderPage() {
         <LiveWebsitePreview
           sections={sections}
           widthClass={widthClass}
+          selectedSectionId={selectedSectionId}
+          onSelectSection={setSelectedSectionId}
         />
       </main>
 
@@ -120,3 +122,4 @@ export default function BuilderPage() {
     </div>
   );
 }
+
