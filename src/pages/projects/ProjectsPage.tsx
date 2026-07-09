@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, Globe2, Loader2, Pencil, Plus, Trash2, Zap } from "lucide-react";
+import { Copy, Eye, Globe2, Loader2, Pencil, Plus, Trash2, Zap } from "lucide-react";
 import { toast } from "sonner";
 import type { Project } from "../../types/project";
 import {
@@ -8,7 +8,7 @@ import {
   deleteProject,
   fetchProjects,
 } from "../../services/projects/projectService";
-import { publishProject, unpublishProject, getPublishedUrl } from "../../services/publish/publishService";
+import { publishProject, unpublishProject } from "../../services/publish/publishService";
 
 const templates = [
   { label: "Restaurant", value: "restaurant" },
@@ -84,11 +84,19 @@ export default function ProjectsPage() {
       } else {
         await publishProject(project.id);
         setProjects(projects.map((p) => (p.id === project.id ? { ...p, published: true } : p)));
-        toast.success("Project published! " + getPublishedUrl(project.slug));
+        const publicUrl = `${window.location.origin}/site/${project.slug}`;
+        toast.success(`Published! Live at: ${publicUrl}`);
       }
     } catch (error: any) {
       toast.error(error.message);
     }
+  };
+
+  const copyPublicUrl = (slug: string | null) => {
+    if (!slug) return;
+    const url = `${window.location.origin}/site/${slug}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Public URL copied!");
   };
 
   useEffect(() => {
@@ -175,6 +183,25 @@ export default function ProjectsPage() {
                 <p className="mt-1 text-sm text-white/45">
                   {project.industry} &middot; {project.template}
                 </p>
+                {project.published && project.slug && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <a
+                      href={`/site/${project.slug}`}
+                      target="_blank"
+                      rel="noopener"
+                      className="text-xs text-cyan-300 hover:underline"
+                    >
+                      {window.location.host}/site/{project.slug}
+                    </a>
+                    <button
+                      onClick={() => copyPublicUrl(project.slug)}
+                      className="rounded-md p-1 text-white/30 hover:text-cyan-300"
+                      title="Copy URL"
+                    >
+                      <Copy size={12} />
+                    </button>
+                  </div>
+                )}
               </div>
 
               <span className={`rounded-full px-3 py-1 text-center text-xs font-medium ${

@@ -12,6 +12,7 @@ import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/onboarding/OnboardingPage";
 import PreviewPage from "./pages/preview/PreviewPage";
 import MediaLibraryPage from "./pages/media/MediaLibraryPage";
+import PublicSitePage from "./pages/site/PublicSitePage";
 
 export default function App() {
   return (
@@ -30,6 +31,9 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+
+        {/* Public site - no login required */}
+        <Route path="/site/:slug" element={<PublicSitePage />} />
 
         <Route
           element={

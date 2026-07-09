@@ -12,6 +12,7 @@ import { createPage, getPages } from "../../services/projects/pageService";
 import { createSection, ensureDefaultSections } from "../../services/builder/sectionService";
 import { updateSectionOrder } from "../../services/builder/reorderSections";
 import { deleteSection } from "../../services/builder/deleteSection";
+import { supabase } from "../../lib/supabase/client";
 import type { BuilderSection, PreviewMode, SaveStatus } from "../../types/builder";
 
 export default function BuilderPage() {
@@ -25,12 +26,23 @@ export default function BuilderPage() {
   const [zoom, setZoom] = useState(70);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [addBlockOpen, setAddBlockOpen] = useState(false);
+  const [projectSlug, setProjectSlug] = useState<string | null>(null);
+  const [published, setPublished] = useState(false);
 
   async function loadPages() {
     if (!id) return;
     const data = await getPages(id);
     setPages(data);
     if (data.length) setSelectedPageId((prev) => prev ?? data[0].id);
+  }
+
+  async function loadProjectInfo() {
+    if (!id) return;
+    const { data } = await supabase.from("projects").select("slug, published").eq("id", id).single();
+    if (data) {
+      setProjectSlug(data.slug);
+      setPublished(data.published ?? false);
+    }
   }
 
   async function loadSections(pageId: string) {
@@ -41,6 +53,7 @@ export default function BuilderPage() {
 
   useEffect(() => {
     loadPages();
+    loadProjectInfo();
   }, [id]);
 
   useEffect(() => {
@@ -125,7 +138,7 @@ export default function BuilderPage() {
       />
 
       <main className="flex-1 overflow-auto bg-[#080808] p-6">
-        <PreviewToolbar mode={previewMode} zoom={zoom} status={saveStatus} onModeChange={setPreviewMode} onZoomChange={setZoom} />
+        <PreviewToolbar mode={previewMode} zoom={zoom} status={saveStatus} projectId={id} projectSlug={projectSlug} published={published} onModeChange={setPreviewMode} onZoomChange={setZoom} onPublishChange={setPublished} />
         <LiveWebsitePreview sections={sections} widthClass={widthClass} zoom={zoom} selectedSectionId={selectedSectionId} onSelectSection={setSelectedSectionId} />
       </main>
 
