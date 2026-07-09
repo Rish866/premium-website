@@ -4,18 +4,24 @@
 
 export default function ContactBlock({ config }: Props) {
   return (
-    <section className="p-12 text-center">
-      <h2 className="text-3xl font-semibold">
-        Contact
+    <section className="px-10 py-20 text-center">
+      <p className="text-sm text-cyan-200">{config.eyebrow ?? "Contact"}</p>
+
+      <h2 className="mt-3 text-4xl font-semibold text-white">
+        {config.title ?? "Ready to start?"}
       </h2>
 
-      <p className="mt-4 text-white/50">
-        {config.phone || "Phone not configured"}
-      </p>
+      {config.subtitle && <p className="mx-auto mt-4 max-w-xl text-white/50">{config.subtitle}</p>}
 
-      <p className="text-white/40">
-        {config.email || "Email not configured"}
-      </p>
+      <div className="mx-auto mt-8 grid max-w-2xl gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-white/60">
+          {config.phone || "Phone not configured"}
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-white/60">
+          {config.email || "Email not configured"}
+        </div>
+      </div>
     </section>
   );
 }
