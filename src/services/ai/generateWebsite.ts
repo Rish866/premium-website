@@ -2,6 +2,7 @@ import { supabase } from "../../lib/supabase/client";
 import type { OnboardingData } from "../../types/onboarding";
 import type { Project } from "../../types/project";
 import { getIndustryTemplate } from "./industryTemplates";
+import { getIndustryImages } from "./stockImages";
 
 /**
  * AI Website Generation Service
@@ -92,6 +93,7 @@ export async function generateAndCreateProject(data: OnboardingData): Promise<Pr
 
 function generateSections(data: OnboardingData) {
   const template = getIndustryTemplate(data.industry);
+  const images = getIndustryImages(data.industry);
   const businessName = data.businessName || "Your Business";
   const tagline = data.tagline || template.defaultTagline;
   const description = data.businessDescription || template.defaultDescription;
@@ -102,6 +104,14 @@ function generateSections(data: OnboardingData) {
 
   return [
     {
+      type: "navbar",
+      config: {
+        brandName: businessName,
+        links: ["Home", "About", "Services", "Gallery", "Pricing", "Contact"],
+        ctaText: template.heroCta,
+      },
+    },
+    {
       type: "hero",
       config: {
         eyebrow: template.heroEyebrow,
@@ -109,6 +119,8 @@ function generateSections(data: OnboardingData) {
         subtitle: description || `Welcome to ${businessName}. ${template.defaultDescription}`,
         buttonText: template.heroCta,
         buttonLink: "#contact",
+        heroImage: images.hero,
+        trustLogos: images.trustLogos,
         backgroundGradient: `linear-gradient(135deg, ${data.primaryColor}22, ${data.secondaryColor}22)`,
       },
     },
@@ -126,7 +138,7 @@ function generateSections(data: OnboardingData) {
       config: {
         eyebrow: "Gallery",
         title: `Experience ${businessName}`,
-        images: template.defaultGallery,
+        images: images.gallery,
       },
     },
     {
@@ -160,6 +172,31 @@ function generateSections(data: OnboardingData) {
         facebook: data.facebook,
         linkedin: data.linkedin,
         googleBusiness: data.googleBusiness,
+      },
+    },
+    {
+      type: "cta",
+      config: {
+        eyebrow: "Ready?",
+        title: `Start your journey with ${businessName} today`,
+        subtitle: `We're here to help. Get in touch and let's make something great together.`,
+        buttonText: template.heroCta,
+        secondaryButtonText: "Learn More",
+      },
+    },
+    {
+      type: "footer",
+      config: {
+        brandName: businessName,
+        tagline: tagline || description?.slice(0, 100),
+        phone,
+        email,
+        address: [data.address, data.city, data.state].filter(Boolean).join(", "),
+        links: ["Home", "About", "Services", "Gallery", "Pricing", "Contact"],
+        services: services.slice(0, 6),
+        instagram: data.instagram,
+        facebook: data.facebook,
+        linkedin: data.linkedin,
       },
     },
   ];

@@ -1,54 +1,67 @@
-import { Zap, Shield, Globe2, Palette, Rocket, Star } from "lucide-react";
+import { motion } from "framer-motion";
+import { Zap, Shield, Globe2, Palette, Rocket, Star, Heart, Users, Clock, Award } from "lucide-react";
 
 type Props = {
   config: any;
 };
 
-const iconMap = [Zap, Shield, Globe2, Palette, Rocket, Star];
+const iconMap = [Zap, Shield, Globe2, Palette, Rocket, Star, Heart, Users, Clock, Award];
 
 export default function FeaturesBlock({ config }: Props) {
   const items: string[] = config.items ?? [];
 
   return (
-    <section className="relative overflow-hidden border-b border-white/10 px-6 py-16">
-      {/* Subtle background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-[#050510] to-black" />
-      <div className="absolute left-1/2 top-0 h-px w-1/2 -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+    <section className="relative overflow-hidden px-6 py-24 lg:py-32">
+      <div className="absolute inset-0 bg-[#050508]" />
+      {/* Accent line */}
+      <div className="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
 
-      <div className="relative">
+      <div className="relative mx-auto max-w-6xl">
         {/* Header */}
-        <div className="mx-auto mb-12 max-w-2xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto mb-16 max-w-2xl text-center"
+        >
           {config.eyebrow && (
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-cyan-300">{config.eyebrow}</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">{config.eyebrow}</p>
           )}
-          <h2 className="text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
             {config.title ?? "What We Offer"}
           </h2>
           {config.subtitle && (
-            <p className="mt-3 text-sm text-white/50">{config.subtitle}</p>
+            <p className="mt-4 text-base leading-relaxed text-white/50">{config.subtitle}</p>
           )}
-        </div>
+        </motion.div>
 
         {/* Grid */}
-        <div className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item: string, index: number) => {
             const Icon = iconMap[index % iconMap.length];
             return (
-              <div
+              <motion.div
                 key={`${item}-${index}`}
-                className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.05] to-transparent p-6 backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/30 hover:bg-white/[0.08] hover:shadow-lg hover:shadow-cyan-500/5"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-7 transition-all duration-300 hover:border-cyan-400/20 hover:shadow-xl hover:shadow-cyan-500/5"
               >
-                {/* Glow on hover */}
-                <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-cyan-400/10 opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
+                {/* Glow */}
+                <div className="absolute -right-12 -top-12 h-28 w-28 rounded-full bg-cyan-400/8 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
 
                 <div className="relative">
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400/20 to-purple-400/10 text-cyan-300">
-                    <Icon size={20} />
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/15 to-purple-400/10 text-cyan-300 transition-transform duration-300 group-hover:scale-110">
+                    <Icon size={22} />
                   </div>
-                  <p className="text-sm font-semibold text-white">{item}</p>
-                  <p className="mt-2 text-xs text-white/40">Premium quality service tailored to your needs.</p>
+                  <h3 className="text-sm font-bold text-white">{item}</h3>
+                  <p className="mt-2 text-xs leading-relaxed text-white/40">
+                    Professional service delivered with expertise and attention to detail.
+                  </p>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

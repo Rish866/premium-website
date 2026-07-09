@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 type Props = {
@@ -6,46 +7,56 @@ type Props = {
 
 export default function CTABlock({ config }: Props) {
   return (
-    <section className="relative overflow-hidden border-b border-white/10 px-6 py-16">
-      <div className="absolute inset-0 bg-gradient-to-b from-black to-[#030308]" />
+    <section className="relative overflow-hidden px-6 py-24 lg:py-32">
+      <div className="absolute inset-0 bg-[#050508]" />
 
-      <div className="relative">
-        <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-white/[0.08]">
-          {/* Gradient background */}
-          <div className="relative bg-gradient-to-br from-cyan-500/20 via-purple-500/15 to-blue-500/20 p-10 text-center sm:p-14">
-            {/* Grid overlay */}
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDQwIEwgNDAgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-50" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="relative mx-auto max-w-5xl"
+      >
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-white/[0.08]">
+          {/* Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/15 via-purple-500/10 to-blue-500/15" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.2),transparent_60%)]" />
+          {/* Grid */}
+          <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='g' width='40' height='40' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 0 40 L 40 0' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3C/svg%3E\")" }} />
 
-            <div className="relative">
-              {config.eyebrow && (
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-cyan-200">{config.eyebrow}</p>
-              )}
-              <h2 className="mx-auto max-w-2xl text-2xl font-bold text-white sm:text-3xl">
-                {config.title ?? "Ready to get started?"}
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-sm text-white/60">
-                {config.subtitle ?? "Take the first step towards your digital transformation."}
-              </p>
+          <div className="relative px-8 py-16 text-center sm:px-16 sm:py-20">
+            {config.eyebrow && (
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">{config.eyebrow}</p>
+            )}
+            <h2 className="mx-auto max-w-2xl text-3xl font-bold text-white sm:text-4xl">
+              {config.title ?? "Ready to get started?"}
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base text-white/55">
+              {config.subtitle ?? "Take the first step towards your digital transformation."}
+            </p>
 
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <button className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all hover:scale-105 hover:shadow-white/20">
-                  {config.buttonText ?? "Get Started"}
-                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-bold text-black shadow-xl shadow-white/10"
+              >
+                {config.buttonText ?? "Get Started"}
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </motion.button>
+              {config.secondaryButtonText && (
+                <button className="rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-medium text-white/70 backdrop-blur-sm transition hover:bg-white/10">
+                  {config.secondaryButtonText}
                 </button>
-                {config.secondaryButtonText && (
-                  <button className="rounded-full border border-white/20 bg-white/5 px-7 py-3 text-sm text-white/80 backdrop-blur-sm transition-all hover:bg-white/10">
-                    {config.secondaryButtonText}
-                  </button>
-                )}
-              </div>
+              )}
             </div>
-
-            {/* Glow effects */}
-            <div className="absolute -left-20 top-0 h-40 w-40 rounded-full bg-cyan-500/20 blur-3xl" />
-            <div className="absolute -right-20 bottom-0 h-40 w-40 rounded-full bg-purple-500/20 blur-3xl" />
           </div>
+
+          {/* Glow orbs */}
+          <div className="absolute -left-20 top-1/4 h-52 w-52 rounded-full bg-cyan-500/15 blur-3xl" />
+          <div className="absolute -right-20 bottom-1/4 h-52 w-52 rounded-full bg-purple-500/15 blur-3xl" />
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 type Props = {
@@ -8,35 +9,45 @@ export default function FAQBlock({ config }: Props) {
   const items = config.items ?? [];
 
   return (
-    <section className="relative overflow-hidden border-b border-white/10 px-6 py-16">
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-[#030308] to-black" />
+    <section className="relative overflow-hidden px-6 py-24 lg:py-32">
+      <div className="absolute inset-0 bg-[#030306]" />
 
-      <div className="relative">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
+      <div className="relative mx-auto max-w-3xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-16 text-center"
+        >
           {config.eyebrow && (
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-cyan-300">{config.eyebrow}</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">{config.eyebrow}</p>
           )}
-          <h2 className="text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
             {config.title ?? "Frequently Asked Questions"}
           </h2>
-        </div>
+        </motion.div>
 
-        <div className="mx-auto max-w-3xl space-y-3">
+        <div className="space-y-3">
           {items.map((item: any, index: number) => (
-            <details
+            <motion.details
               key={index}
-              className="group rounded-2xl border border-white/[0.08] bg-gradient-to-r from-white/[0.03] to-transparent backdrop-blur-sm transition-all hover:border-white/15 [&[open]]:border-cyan-400/20 [&[open]]:bg-cyan-400/[0.03]"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.06 }}
+              className="group rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-all hover:border-white/12 open:border-cyan-400/20 open:bg-cyan-400/[0.02]"
             >
-              <summary className="flex cursor-pointer items-center justify-between p-5 text-sm font-semibold text-white list-none">
-                <span>{item.question}</span>
-                <ChevronDown size={16} className="shrink-0 text-white/40 transition-transform duration-200 group-open:rotate-180 group-open:text-cyan-300" />
+              <summary className="flex cursor-pointer items-center justify-between p-6 text-sm font-semibold text-white [&::-webkit-details-marker]:hidden">
+                <span className="pr-4">{item.question}</span>
+                <ChevronDown size={18} className="shrink-0 text-white/30 transition-transform duration-300 group-open:rotate-180 group-open:text-cyan-300" />
               </summary>
-              <div className="px-5 pb-5">
-                <div className="border-t border-white/5 pt-4">
-                  <p className="text-xs leading-relaxed text-white/55">{item.answer}</p>
+              <div className="px-6 pb-6">
+                <div className="border-t border-white/[0.06] pt-4">
+                  <p className="text-sm leading-relaxed text-white/50">{item.answer}</p>
                 </div>
               </div>
-            </details>
+            </motion.details>
           ))}
         </div>
       </div>
