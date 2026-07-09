@@ -1,21 +1,12 @@
 ﻿import { X } from "lucide-react";
 
 const blockTypes = [
-  {
-    type: "hero",
-    title: "Hero",
-    description: "Headline, subtitle and CTA area",
-  },
-  {
-    type: "features",
-    title: "Features",
-    description: "Three-column feature highlights",
-  },
-  {
-    type: "contact",
-    title: "Contact",
-    description: "Phone and email contact block",
-  },
+  { type: "hero", title: "Hero", description: "Headline, subtitle and CTA area" },
+  { type: "features", title: "Features", description: "Three-column feature highlights" },
+  { type: "gallery", title: "Gallery", description: "Premium visual gallery grid" },
+  { type: "pricing", title: "Pricing", description: "Plans and package cards" },
+  { type: "faq", title: "FAQ", description: "Frequently asked questions" },
+  { type: "contact", title: "Contact", description: "Phone and email contact block" },
 ];
 
 type Props = {
@@ -33,15 +24,10 @@ export default function AddBlockPanel({ open, onClose, onAdd }: Props) {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold">Add Block</h2>
-            <p className="mt-1 text-sm text-white/45">
-              Insert a new section into this page.
-            </p>
+            <p className="mt-1 text-sm text-white/45">Insert a new section into this page.</p>
           </div>
 
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-white/10 bg-white/5 p-2 text-white/60 hover:text-white"
-          >
+          <button onClick={onClose} className="rounded-xl border border-white/10 bg-white/5 p-2 text-white/60 hover:text-white">
             <X size={18} />
           </button>
         </div>

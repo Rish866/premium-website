@@ -39,9 +39,7 @@ export async function createDefaultSections(pageId: string) {
     },
   ];
 
-  const { error } = await supabase
-    .from("sections")
-    .insert(defaults.map((section) => ({ page_id: pageId, ...section })));
+  const { error } = await supabase.from("sections").insert(defaults.map((section) => ({ page_id: pageId, ...section })));
 
   if (error) throw error;
 }
@@ -49,9 +47,7 @@ export async function createDefaultSections(pageId: string) {
 export async function ensureDefaultSections(pageId: string) {
   const existingSections = await getSections(pageId);
 
-  if (existingSections.length > 0) {
-    return existingSections;
-  }
+  if (existingSections.length > 0) return existingSections;
 
   await createDefaultSections(pageId);
 
@@ -61,32 +57,38 @@ export async function ensureDefaultSections(pageId: string) {
 export async function createSection(pageId: string, type: string, sortOrder: number) {
   const defaultConfig =
     type === "hero"
-      ? {
-          title: "New Hero Section",
-          subtitle: "Write a powerful message for this section.",
-        }
+      ? { title: "New Hero Section", subtitle: "Write a powerful message for this section." }
       : type === "features"
+      ? { items: ["Feature One", "Feature Two", "Feature Three"] }
+      : type === "gallery"
+      ? { eyebrow: "Gallery", title: "Visual gallery", images: ["Image One", "Image Two", "Image Three"] }
+      : type === "pricing"
       ? {
-          items: ["Feature One", "Feature Two", "Feature Three"],
+          eyebrow: "Pricing",
+          title: "Choose your plan",
+          subtitle: "Simple packages for every business.",
+          plans: [
+            { name: "Starter", price: "₹9,999", features: ["Landing page", "WhatsApp CTA", "Mobile responsive"] },
+            { name: "Premium", price: "₹24,999", features: ["SEO setup", "Gallery", "Lead form"] },
+            { name: "Growth", price: "₹49,999", features: ["Multi-page", "Analytics", "Custom domain"] },
+          ],
+        }
+      : type === "faq"
+      ? {
+          eyebrow: "FAQ",
+          title: "Frequently asked questions",
+          items: [
+            { question: "How fast can this website go live?", answer: "Most generated websites can be ready within minutes after content is added." },
+            { question: "Can I customize the design?", answer: "Yes, AgencyOS is built around editable sections, themes and JSON configuration." },
+          ],
         }
       : type === "contact"
-      ? {
-          phone: "+91 98765 43210",
-          email: "hello@agencyos.ai",
-        }
-      : {
-          title: "New Section",
-          subtitle: "Configure this section from the properties panel.",
-        };
+      ? { phone: "+91 98765 43210", email: "hello@agencyos.ai" }
+      : { title: "New Section", subtitle: "Configure this section from the properties panel." };
 
   const { data, error } = await supabase
     .from("sections")
-    .insert({
-      page_id: pageId,
-      type,
-      sort_order: sortOrder,
-      config: defaultConfig,
-    })
+    .insert({ page_id: pageId, type, sort_order: sortOrder, config: defaultConfig })
     .select()
     .single();
 
