@@ -1,13 +1,5 @@
-﻿import { X } from "lucide-react";
-
-const blockTypes = [
-  { type: "hero", title: "Hero", description: "Headline, subtitle and CTA area" },
-  { type: "features", title: "Features", description: "Feature cards and value points" },
-  { type: "gallery", title: "Gallery", description: "Visual gallery grid" },
-  { type: "pricing", title: "Pricing", description: "Plans and package cards" },
-  { type: "faq", title: "FAQ", description: "Questions and answers" },
-  { type: "contact", title: "Contact", description: "Phone, email and lead CTA" },
-];
+import { X } from "lucide-react";
+import { availableBlocks } from "../../engine/registry/BlockRegistry";
 
 type Props = {
   open: boolean;
@@ -20,7 +12,7 @@ export default function AddBlockPanel({ open, onClose, onAdd }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
-      <div className="h-full w-[440px] border-l border-white/10 bg-[#080808] p-6 text-white shadow-2xl">
+      <div className="h-full w-[440px] overflow-y-auto border-l border-white/10 bg-[#080808] p-6 text-white shadow-2xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold">Add Block</h2>
@@ -32,9 +24,9 @@ export default function AddBlockPanel({ open, onClose, onAdd }: Props) {
         </div>
 
         <div className="grid gap-3">
-          {blockTypes.map((block) => (
+          {availableBlocks.map((block) => (
             <button key={block.type} onClick={() => onAdd(block.type)} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-left transition hover:border-cyan-300/40 hover:bg-cyan-400/10">
-              <p className="text-lg font-semibold">{block.title}</p>
+              <p className="text-lg font-semibold">{block.label}</p>
               <p className="mt-1 text-sm text-white/45">{block.description}</p>
             </button>
           ))}
