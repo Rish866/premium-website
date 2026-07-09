@@ -13,56 +13,80 @@
     #log { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); font-family: monospace; font-size: 12px; white-space: pre-wrap; min-height: 200px; }
     .success { color: #34d399; }
     .error { color: #f87171; }
+    .warn { color: #fbbf24; }
   </style>
 </head>
 <body>
   <h1>Seed Demo Project</h1>
-  <p>Creates a sample "Urban Spice" restaurant project in your AgencyOS account. You must be logged in first.</p>
+  <p>Creates a sample "Urban Spice" restaurant project in your AgencyOS account.<br>You must be logged in to the main app first (open /login in another tab).</p>
   <button id="seedBtn" onclick="seedProject()">Create Demo Project</button>
   <div id="log"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
     const SUPABASE_URL = 'https://qzpdwywgkoloksiiayrf.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cGR3eXdna29sb2tzaWlheXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMzQ1MDAsImV4cCI6MjA2NzYxMDUwMH0.sb_publishable_3B6sqRtONpFqiuzNZuuzug_3lmxiXS0';
-    
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = 'sb_publishable_3B6sqRtONpFqiuzNZuuzug_3lmxiXS0';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     function log(msg, type) {
       const el = document.getElementById('log');
-      const cls = type === 'success' ? 'success' : type === 'error' ? 'error' : '';
+      const cls = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warn' ? 'warn' : '';
       el.innerHTML += `<span class="${cls}">${msg}</span>\n`;
+      el.scrollTop = el.scrollHeight;
     }
 
-    async function seedProject() {
+    window.seedProject = async function() {
       const btn = document.getElementById('seedBtn');
       btn.disabled = true;
       document.getElementById('log').innerHTML = '';
 
       try {
-        // 1. Get current user
-        log('Getting current user...');
-        const { data: { user }, error: authErr } = await supabase.auth.getUser();
-        if (authErr || !user) throw new Error('Not logged in. Please login to AgencyOS first.');
+        log('Checking authentication...');
+        const { data: { session }, error: sessErr } = await supabase.auth.getSession();
+        
+        if (sessErr) {
+          log(`Auth error: ${sessErr.message}`, 'error');
+          throw sessErr;
+        }
+
+        if (!session) {
+          log('', 'error');
+          log('NOT LOGGED IN!', 'error');
+          log('', 'error');
+          log('Please do the following:', 'warn');
+          log('1. Open /login in another tab', 'warn');
+          log('2. Login with your credentials', 'warn');
+          log('3. Come back here and click the button again', 'warn');
+          btn.disabled = false;
+          return;
+        }
+
+        const user = session.user;
         log(`Logged in as: ${user.email}`, 'success');
 
-        // 2. Create project
-        log('Creating project...');
+        // Create project
+        log('Creating project "Urban Spice"...');
         const { data: project, error: projErr } = await supabase.from('projects').insert({
           owner: user.id,
           name: 'Urban Spice',
           industry: 'Restaurant',
           template: 'restaurant',
-          slug: 'urban-spice-' + Date.now(),
+          slug: 'urban-spice-demo-' + Date.now(),
           description: 'Premium fine dining restaurant in the heart of Mumbai. Modern Indian cuisine with a contemporary twist.',
           primary_color: '#06b6d4',
           secondary_color: '#8b5cf6',
           published: false,
         }).select().single();
-        if (projErr) throw projErr;
-        log(`Project created: ${project.name} (${project.id})`, 'success');
 
-        // 3. Create home page
+        if (projErr) {
+          log(`Project error: ${projErr.message}`, 'error');
+          throw projErr;
+        }
+        log(`Project created: ${project.name}`, 'success');
+
+        // Create home page
         log('Creating pages...');
         const { data: homePage, error: pageErr } = await supabase.from('pages').insert({
           project_id: project.id,
@@ -71,9 +95,12 @@
           is_home: true,
           sort_order: 0,
         }).select().single();
-        if (pageErr) throw pageErr;
 
-        // Additional pages
+        if (pageErr) {
+          log(`Page error: ${pageErr.message}`, 'error');
+          throw pageErr;
+        }
+
         await supabase.from('pages').insert([
           { project_id: project.id, title: 'About', slug: '/about', sort_order: 1 },
           { project_id: project.id, title: 'Menu', slug: '/menu', sort_order: 2 },
@@ -81,7 +108,7 @@
         ]);
         log('Pages created: Home, About, Menu, Contact', 'success');
 
-        // 4. Create theme
+        // Create theme
         log('Creating theme...');
         await supabase.from('themes').insert({
           project_id: project.id,
@@ -93,16 +120,12 @@
         });
         log('Theme created', 'success');
 
-        // 5. Create sections
-        log('Creating sections with premium content...');
+        // Create sections
+        log('Creating 10 premium sections...');
         const sections = [
           {
             page_id: homePage.id, type: 'navbar', sort_order: 1,
-            config: {
-              brandName: 'Urban Spice',
-              links: ['Home', 'About', 'Menu', 'Gallery', 'Reservations', 'Contact'],
-              ctaText: 'Reserve a Table',
-            }
+            config: { brandName: 'Urban Spice', links: ['Home', 'About', 'Menu', 'Gallery', 'Reservations', 'Contact'], ctaText: 'Reserve a Table' }
           },
           {
             page_id: homePage.id, type: 'hero', sort_order: 2,
@@ -144,10 +167,10 @@
             config: {
               eyebrow: 'Dining Options',
               title: 'Choose Your Experience',
-              subtitle: 'From intimate dinners to grand celebrations, we have the perfect setting.',
+              subtitle: 'From intimate dinners to grand celebrations.',
               plans: [
-                { name: 'Lunch Prix Fixe', price: '₹1,499', features: ['3-course meal', 'Welcome drink', 'Chef\'s amuse-bouche', 'Weekday special'] },
-                { name: 'Dinner Tasting', price: '₹3,999', features: ['7-course tasting menu', 'Wine pairing option', 'Live kitchen view', 'Digestif included'] },
+                { name: 'Lunch Prix Fixe', price: '\u20B91,499', features: ['3-course meal', 'Welcome drink', "Chef's amuse-bouche", 'Weekday special'] },
+                { name: 'Dinner Tasting', price: '\u20B93,999', features: ['7-course tasting menu', 'Wine pairing option', 'Live kitchen view', 'Digestif included'] },
                 { name: 'Private Event', price: 'Custom', features: ['Exclusive dining room', 'Custom menu design', 'Personal sommelier', 'Valet for 20 cars'] },
               ],
             }
@@ -157,11 +180,11 @@
             config: {
               eyebrow: 'Guest Reviews',
               title: 'What Our Guests Say',
-              subtitle: 'Join thousands of happy diners who made memories at Urban Spice.',
+              subtitle: 'Join thousands of happy diners.',
               items: [
-                { name: 'Priya Mehta', text: 'The tasting menu was an absolute revelation. Each course was a surprise, and the wine pairing was impeccable. This is fine dining at its finest in Mumbai.', role: 'Food Blogger' },
-                { name: 'Rajesh Kumar', text: 'Hosted our anniversary here and the team made it magical. The private dining room, custom menu, and the attention to detail — worth every rupee.', role: 'Regular Guest' },
-                { name: 'Ananya Shah', text: 'As a chef myself, I rarely get impressed. Urban Spice managed to make me feel like a first-time diner again. The butter chicken deconstructed is genius.', role: 'Chef & Restaurateur' },
+                { name: 'Priya Mehta', text: 'The tasting menu was an absolute revelation. Each course was a surprise. This is fine dining at its finest in Mumbai.', role: 'Food Blogger' },
+                { name: 'Rajesh Kumar', text: 'Hosted our anniversary here and the team made it magical. The private dining room and custom menu were perfect.', role: 'Regular Guest' },
+                { name: 'Ananya Shah', text: 'As a chef myself, I rarely get impressed. Urban Spice made me feel like a first-time diner again.', role: 'Chef & Restaurateur' },
               ],
             }
           },
@@ -171,11 +194,10 @@
               eyebrow: 'FAQ',
               title: 'Frequently Asked Questions',
               items: [
-                { question: 'Do I need a reservation?', answer: 'We strongly recommend reservations for dinner service, especially on weekends. Walk-ins are welcome for lunch on weekdays subject to availability.' },
-                { question: 'Is there a dress code?', answer: 'Smart casual attire is appreciated. We want you to feel comfortable while maintaining an elegant atmosphere for all guests.' },
-                { question: 'Do you accommodate dietary restrictions?', answer: 'Absolutely. Our chefs are experienced in crafting exquisite meals for vegetarian, vegan, gluten-free, and other dietary needs. Please inform us when booking.' },
-                { question: 'Is valet parking available?', answer: 'Yes, complimentary valet parking is available for all dinner guests. Lunch guests can use our dedicated parking area.' },
-                { question: 'Can I host a private event?', answer: 'Yes! We have private dining rooms for 10-50 guests and can arrange exclusive buyouts for larger celebrations. Contact our events team.' },
+                { question: 'Do I need a reservation?', answer: 'We strongly recommend reservations for dinner, especially weekends. Walk-ins welcome for lunch.' },
+                { question: 'Is there a dress code?', answer: 'Smart casual attire is appreciated.' },
+                { question: 'Do you accommodate dietary restrictions?', answer: 'Yes — vegetarian, vegan, gluten-free, and more. Inform us when booking.' },
+                { question: 'Is valet parking available?', answer: 'Yes, complimentary valet for all dinner guests.' },
               ],
             }
           },
@@ -184,12 +206,12 @@
             config: {
               eyebrow: 'Visit Us',
               title: 'Make a Reservation',
-              subtitle: 'We\'d love to welcome you. Book your table or reach out for special requests.',
+              subtitle: "We'd love to welcome you.",
               phone: '+91 22 4567 8900',
               email: 'reservations@urbanspice.in',
               whatsapp: '+919876543210',
-              address: '42 Marine Drive, Colaba, Mumbai, Maharashtra 400001',
-              openingHours: 'Lunch: 12-3 PM | Dinner: 7-11 PM | Bar: 5 PM-1 AM',
+              address: '42 Marine Drive, Colaba, Mumbai 400001',
+              openingHours: 'Lunch: 12-3 PM | Dinner: 7-11 PM',
               instagram: 'urbanspice.mumbai',
               facebook: 'urbanspicemumbai',
             }
@@ -199,7 +221,7 @@
             config: {
               eyebrow: 'Limited Seats',
               title: 'Your Table Awaits',
-              subtitle: 'Weekend tables fill up fast. Reserve now and experience the magic of Urban Spice.',
+              subtitle: 'Weekend tables fill up fast. Reserve now.',
               buttonText: 'Reserve Now',
               secondaryButtonText: 'View Menu',
             }
@@ -208,12 +230,12 @@
             page_id: homePage.id, type: 'footer', sort_order: 10,
             config: {
               brandName: 'Urban Spice',
-              tagline: 'Modern Indian fine dining in the heart of Mumbai. Award-winning cuisine, craft cocktails, and unforgettable evenings.',
+              tagline: 'Modern Indian fine dining in the heart of Mumbai.',
               phone: '+91 22 4567 8900',
               email: 'reservations@urbanspice.in',
               address: '42 Marine Drive, Colaba, Mumbai 400001',
               links: ['Home', 'About', 'Menu', 'Gallery', 'Reservations', 'Contact'],
-              services: ['Fine Dining', 'Private Events', 'Cocktail Bar', 'Catering', 'Chef\'s Table', 'Wine Tasting'],
+              services: ['Fine Dining', 'Private Events', 'Cocktail Bar', 'Catering', "Chef's Table", 'Wine Tasting'],
               instagram: 'urbanspice.mumbai',
               facebook: 'urbanspicemumbai',
               linkedin: 'urbanspice',
@@ -222,20 +244,26 @@
         ];
 
         const { error: secErr } = await supabase.from('sections').insert(sections);
-        if (secErr) throw secErr;
-        log(`${sections.length} sections created with premium content`, 'success');
+        if (secErr) {
+          log(`Sections error: ${secErr.message}`, 'error');
+          throw secErr;
+        }
+        log('10 sections created with premium content', 'success');
 
         log('');
-        log('========================================', 'success');
-        log('✅ DEMO PROJECT CREATED SUCCESSFULLY!', 'success');
-        log('========================================', 'success');
+        log('==========================================', 'success');
+        log('  DEMO PROJECT CREATED SUCCESSFULLY!', 'success');
+        log('==========================================', 'success');
         log('');
-        log('Go to: /projects to see "Urban Spice"');
-        log('Click Edit to open the Builder');
-        log(`Project ID: ${project.id}`);
+        log('Now go to: /projects');
+        log('You will see "Urban Spice" — click Edit to open Builder');
+        log(`Project ID: ${project.id}`, 'warn');
 
       } catch (err) {
-        log(`ERROR: ${err.message}`, 'error');
+        log(`\nFailed: ${err.message}`, 'error');
+        log('\nTroubleshooting:', 'warn');
+        log('- Make sure you are logged in at /login', 'warn');
+        log('- Check browser console (F12) for details', 'warn');
       } finally {
         btn.disabled = false;
       }
