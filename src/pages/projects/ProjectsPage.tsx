@@ -205,9 +205,13 @@ export default function ProjectsPage() {
                   <Pencil size={14} />
                   Edit
                 </Link>
-                <button className="rounded-xl border border-white/10 bg-white/5 p-2 text-white/70 hover:text-cyan-200">
+                <Link
+                  to={`/preview/${project.id}`}
+                  className="rounded-xl border border-white/10 bg-white/5 p-2 text-white/70 hover:text-cyan-200"
+                  title="Preview website"
+                >
                   <Eye size={14} />
-                </button>
+                </Link>
                 <button
                   onClick={() => handleDelete(project.id)}
                   className="rounded-xl border border-red-300/20 bg-red-400/10 p-2 text-red-200 hover:bg-red-400/15"

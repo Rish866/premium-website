@@ -22,7 +22,7 @@ export default function BuilderPage() {
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<PreviewMode>("desktop");
-  const [zoom, setZoom] = useState(90);
+  const [zoom, setZoom] = useState(70);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [addBlockOpen, setAddBlockOpen] = useState(false);
 

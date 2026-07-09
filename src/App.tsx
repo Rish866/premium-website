@@ -10,6 +10,7 @@ import ProjectsPage from "./pages/projects/ProjectsPage";
 import BuilderPage from "./pages/builder/BuilderPage";
 import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/onboarding/OnboardingPage";
+import PreviewPage from "./pages/preview/PreviewPage";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/builder/:id" element={<BuilderPage />} />
+          <Route path="/preview/:id" element={<PreviewPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Route>
