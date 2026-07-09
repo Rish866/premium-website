@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Code2, ImageIcon, Palette, SlidersHorizontal, Type } from "lucide-react";
 import { updateSectionConfig } from "../../services/builder/updateSection";
 import { useDebounce } from "../../hooks/useDebounce";
+import ImageUploader from "./ImageUploader";
 import type { BuilderSection, SaveStatus } from "../../types/builder";
 
 type Props = {
@@ -124,29 +125,24 @@ export default function PropertyPanel({ section, onLocalChange, onStatusChange }
       {/* Images Group - for gallery blocks */}
       {Array.isArray(config.images) && (
         <PanelGroup title="Images" icon={ImageIcon}>
-          <p className="mb-3 text-xs text-white/40">
-            Add image URLs (one per line). Supports https:// links. Text entries show as placeholders.
-          </p>
-          <TextArea
-            label="Image URLs / Labels"
-            value={config.images.join("\n")}
-            onChange={(v) => updateArrayText("images", v)}
-            rows={6}
+          <ImageUploader
+            images={config.images}
+            onChange={(newImages) => update("images", newImages)}
+            maxImages={12}
+            label="Gallery Images"
           />
-          <div className="mt-2 rounded-xl border border-white/10 bg-black/30 p-3">
-            <p className="mb-2 text-[10px] font-medium text-white/50">Quick Add:</p>
-            <div className="space-y-1.5">
-              <button
-                onClick={() => {
-                  const url = prompt("Paste image URL:");
-                  if (url) update("images", [...(config.images ?? []), url]);
-                }}
-                className="w-full rounded-lg border border-dashed border-cyan-300/30 bg-cyan-400/5 py-2 text-xs text-cyan-200 hover:bg-cyan-400/10"
-              >
-                + Add Image URL
-              </button>
-            </div>
-          </div>
+        </PanelGroup>
+      )}
+
+      {/* Hero Image */}
+      {"heroImage" in config && (
+        <PanelGroup title="Hero Image" icon={ImageIcon}>
+          <ImageUploader
+            images={config.heroImage ? [config.heroImage] : []}
+            onChange={(newImages) => update("heroImage", newImages[0] || "")}
+            maxImages={1}
+            label="Hero Background Image"
+          />
         </PanelGroup>
       )}
 

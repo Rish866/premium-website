@@ -11,6 +11,7 @@ import BuilderPage from "./pages/builder/BuilderPage";
 import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/onboarding/OnboardingPage";
 import PreviewPage from "./pages/preview/PreviewPage";
+import MediaLibraryPage from "./pages/media/MediaLibraryPage";
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/builder/:id" element={<BuilderPage />} />
           <Route path="/preview/:id" element={<PreviewPage />} />
+          <Route path="/media" element={<MediaLibraryPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Route>

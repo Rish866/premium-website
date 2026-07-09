@@ -1,11 +1,12 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FolderKanban, LayoutDashboard, LogOut, Settings, Sparkles, Zap } from "lucide-react";
+import { FolderKanban, ImageIcon, LayoutDashboard, LogOut, Settings, Sparkles, Zap } from "lucide-react";
 import { supabase } from "../../lib/supabase/client";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/onboarding", icon: Zap, label: "Generate" },
   { to: "/projects", icon: FolderKanban, label: "Projects" },
+  { to: "/media", icon: ImageIcon, label: "Media" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 
