@@ -44,3 +44,7 @@ export type WebsiteConfig = {
   }[];
   sections: WebsiteSection[];
 };
+
+// Re-export new types for backwards compatibility
+// Blocks import from '../../types' which resolves to this file
+export type { SectionConfig, SectionType, Variant, BlockProps, BlockComponent, BlockRegistryEntry, PageConfig } from './types/index';
