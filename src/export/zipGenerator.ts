@@ -64,6 +64,7 @@ export function downloadAllFiles(files: ExportFile[], projectName: string): void
 export async function downloadAsZip(files: ExportFile[], projectName: string): Promise<void> {
   try {
     // Try dynamic import of JSZip
+    // @ts-ignore - jszip is an optional peer dependency
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
 

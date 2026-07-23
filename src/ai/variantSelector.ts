@@ -15,7 +15,7 @@ import type { VariantSelections } from './types';
  * Weighted variant preferences per style preset.
  * Higher weight = more likely to be selected.
  */
-const styleVariantPreferences: Record<StylePreset, Partial<Record<SectionType, Record<Variant, number>>>> = {
+const styleVariantPreferences: Record<StylePreset, Partial<Record<SectionType, Partial<Record<Variant, number>>>>> = {
   luxury: {
     hero: { A: 2, B: 5, C: 3, D: 1 },       // Prefers centered (B)
     features: { A: 2, B: 5, C: 2 },          // Prefers editorial (B)
@@ -70,7 +70,7 @@ const styleVariantPreferences: Record<StylePreset, Partial<Record<SectionType, R
 /**
  * Select a variant using weighted random selection.
  */
-function weightedRandomPick(weights: Record<Variant, number>): Variant {
+function weightedRandomPick(weights: Partial<Record<Variant, number>>): Variant {
   const entries = Object.entries(weights) as [Variant, number][];
   const totalWeight = entries.reduce((sum, [, w]) => sum + w, 0);
   let random = Math.random() * totalWeight;
@@ -102,7 +102,7 @@ export function selectVariants(
     const sectionPrefs = preferences[section];
 
     if (sectionPrefs) {
-      result[section] = weightedRandomPick(sectionPrefs as Record<Variant, number>);
+      result[section] = weightedRandomPick(sectionPrefs as Partial<Record<Variant, number>>);
     } else {
       // Use default random (only A and B for sections without many variants)
       const twoVariantTypes: SectionType[] = ['about', 'gallery', 'contact', 'cta', 'footer', 'navbar', 'pricing', 'faq', 'testimonials'];

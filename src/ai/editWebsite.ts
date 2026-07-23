@@ -80,7 +80,7 @@ export async function executeEditCommand(
 function handleLocalCommand(
   command: string,
   sections: SectionConfig[],
-  tokens: DesignTokens,
+  _tokens: DesignTokens,
 ): EditPatch {
   const cmd = command.toLowerCase().trim();
 

@@ -12,15 +12,14 @@
  * The output is a complete WebsiteConfig ready to be rendered.
  */
 
-import type { GenerationInput, GenerationOutput } from './types';
+import type { GenerationInput, GeneratedCopy } from './types';
 import type { SectionConfig, Variant } from '../engine/types';
 import type { DesignTokens } from '../themes/tokens';
 import { selectSectionsForIndustry } from '../industry/sectionMap';
 import { selectVariants } from './variantSelector';
 import { generateCopy } from './generateCopy';
-import { generateFallbackCopy } from './fallbackCopyGenerator';
 import { getPreset } from '../themes/presets';
-import { getIndustryImages } from '../services/stockImages';
+import { getIndustryImages } from '../services/ai/stockImages';
 
 /**
  * Main generation function.
@@ -68,7 +67,7 @@ async function generateCopyForWebsite(input: GenerationInput) {
 function assembleSections(
   types: string[],
   variants: Record<string, Variant | undefined>,
-  copy: ReturnType<typeof generateFallbackCopy> extends Promise<infer T> ? T : never,
+  copy: GeneratedCopy,
   images: { hero: string; gallery: string[]; trustLogos: string[] },
   input: GenerationInput,
 ): SectionConfig[] {

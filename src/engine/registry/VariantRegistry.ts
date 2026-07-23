@@ -10,7 +10,7 @@
  */
 
 import { lazy, type ComponentType } from 'react';
-import type { BlockComponent, BlockRegistryEntry, SectionType, Variant } from '../types';
+import type { BlockComponent, BlockRegistryEntry, Variant } from '../types';
 
 // Lazy-loaded block variants for code splitting
 // Hero variants
