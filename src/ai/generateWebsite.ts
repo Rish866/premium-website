@@ -17,6 +17,7 @@ import type { SectionConfig, Variant } from '../engine/types';
 import type { DesignTokens } from '../themes/tokens';
 import { selectSectionsForIndustry } from '../industry/sectionMap';
 import { selectVariants } from './variantSelector';
+import { generateCopy } from './generateCopy';
 import { generateFallbackCopy } from './fallbackCopyGenerator';
 import { getPreset } from '../themes/presets';
 import { getIndustryImages } from '../services/stockImages';
@@ -37,7 +38,7 @@ export async function generateWebsite(input: GenerationInput): Promise<{
   const variants = selectVariants(sectionTypes, input.stylePreset);
 
   // 3. Generate copy (uses AI if available, otherwise enhanced fallback)
-  const copy = await generateCopy(input);
+  const copy = await generateCopyForWebsite(input);
 
   // 4. Get images
   const images = getIndustryImages(input.industry);
@@ -57,10 +58,8 @@ export async function generateWebsite(input: GenerationInput): Promise<{
 /**
  * Generate copy - tries AI first, falls back to enhanced templates.
  */
-async function generateCopy(input: GenerationInput) {
-  // TODO: Implement AI copy generation with OpenAI/Anthropic
-  // For now, use the enhanced fallback generator
-  return generateFallbackCopy(input);
+async function generateCopyForWebsite(input: GenerationInput) {
+  return generateCopy(input);
 }
 
 /**
